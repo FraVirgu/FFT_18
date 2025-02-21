@@ -172,8 +172,8 @@ void plot_fft_result(const std::vector<std::complex<double>> &fft_result, const 
         frequencies[i] = i; // Frequenze normalizzate (o usa una scala personalizzata)
     }
 
-    // Scrive i dati in un file temporaneo
-    std::ofstream file("fft_output.csv"); // Cambia il nome del file
+    // Scrive i dati in un file temporaneo nella cartella Output_result
+    std::ofstream file("fft_output.csv", std::ios::out | std::ios::trunc); // Cambia il nome del file
     for (size_t i = 0; i < frequencies.size(); ++i)
     {
         file << frequencies[i] << "," << magnitude[i] << "\n"; // Usa ',' come delimitatore

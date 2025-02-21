@@ -2,7 +2,7 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
-def plot_fft_result(frequencies, fft_result, title="FFT Magnitude", xlabel="Frequency", ylabel="Magnitude", output_file="fft_plot.png"):
+def plot_fft_result(frequencies, fft_result, title="FFT Magnitude", xlabel="Frequency", ylabel="Magnitude", output_file="../Plot_result/fft_plot.png"):
     """
     Plotta e salva i risultati della FFT.
 
@@ -51,7 +51,7 @@ import os
 print("Current working directory:", os.getcwd())
 
 # Percorso al file esportato dal C++
-filename = "./src/1D/fft_output.csv"
+filename = "../CUDA_FFT/1D/fft_output.csv"
 
 # Carica i dati
 frequencies, fft_result = load_fft_data(filename)

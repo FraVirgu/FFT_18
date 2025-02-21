@@ -63,10 +63,13 @@ def load_fft_data_2d(filename):
 print("Current working directory:", os.getcwd())
 
 # Percorso al file esportato dal C++
-filename = "./2D/fft_output_2d.csv"
+filename = "../CUDA_FFT/2D/fft_output_2d.csv"
 
 # Carica i dati
 fft_result_2d = load_fft_data_2d(filename)
 
+# Percorso per salvare il grafico
+output_file_path = "../Plot_result/fft_plot_2d.png"
+
 # Plotta i dati
-plot_fft_result_2d(fft_result_2d, title="FFT Visualization (2D)", xlabel="Frequency X", ylabel="Frequency Y", output_file="fft_output_2d_plot.png")
+plot_fft_result_2d(fft_result_2d, title="FFT Visualization (2D)", xlabel="Frequency X", ylabel="Frequency Y", output_file=output_file_path)
