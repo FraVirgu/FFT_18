@@ -12,28 +12,34 @@ int MainClass2D::cols = 0;
 
 int main()
 {
-    int *prova;
-    cudaMallocManaged((void **)&prova, sizeof(int));
-    srand(95);
+  int *prova;
+  cudaMallocManaged((void **)&prova, sizeof(int));
+  srand(95);
 
-    MainClass2D::initializeParameters(1024, 1024);
+  MainClass2D::initializeParameters(1024, 1024);
 
-    Sinusoidal2D sinusoidalGen;
-    Gaussian2D gaussianGen;
-    Random2D randomGen;
+  Sinusoidal2D sinusoidalGen;
+  Gaussian2D gaussianGen;
+  Random2D randomGen;
 
-    // Example usage
-    auto input_sinusoidal = sinusoidalGen.createInput();
-    auto input_gaussian = gaussianGen.createInput();
-    auto input_random = randomGen.createInput();
+  // Example usage
+  auto input_sinusoidal = sinusoidalGen.createInput();
+  auto input_gaussian = gaussianGen.createInput();
+  auto input_random = randomGen.createInput();
+  // Image usage
+  auto input_image = load_matrix_from_txt("./image_converter/matrix_output.txt");
 
-    // DIRECT TRANSFORM
-    bool direct = true;
-    std::vector<std::vector<std::complex<double>>> cuda_output_vector = direct_fft_2d(input_gaussian);
-    save_fft_result_2d(cuda_output_vector);
+  auto input = input_image;
 
-    // INVERSE TRANSFORM
-    std::vector<std::vector<std::complex<double>>> cuda_output_vector_inverse = inverse_fft_2d(cuda_output_vector);
+  // DIRECT TRANSFORM
+  bool direct = true;
+  std::vector<std::vector<std::complex<double>>> cuda_output_vector = direct_fft_2d(input);
 
-    return 0;
+  // CUDA FFT
+  cuda_output_vector = cuda_library_fft_2d(input);
+  save_fft_result_2d(cuda_output_vector);
+  // INVERSE TRANSFORM
+  std::vector<std::vector<std::complex<double>>> cuda_output_vector_inverse = inverse_fft_2d(cuda_output_vector);
+
+  return 0;
 }

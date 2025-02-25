@@ -2,34 +2,44 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-
-def plot_fft_result_2d(fft_result, title="FFT Magnitude (2D)", xlabel="Frequency X", ylabel="Frequency Y", output_file="fft_plot_2d.png"):
+def plot_fft_result_2d(fft_result, sampling_rate, title="FFT Visualization (2D)", output_file="fft_plot_2d.png"):
     """
-    Plotta e salva i risultati della FFT 2D.
-
+    Plots and saves the 2D FFT magnitude spectrum with correct frequency scaling.
+    
     Args:
-        fft_result (np.array): Risultati complessi della FFT 2D.
-        title (str): Titolo del grafico.
-        xlabel (str): Etichetta dell'asse x.
-        ylabel (str): Etichetta dell'asse y.
-        output_file (str): Nome del file per salvare il grafico (es. 'output.png').
+        fft_result (np.array): 2D FFT complex output.
+        sampling_rate (float): Sampling rate in Hz.
+        title (str): Title of the plot.
+        output_file (str): Path to save the output plot.
     """
-    # Calcolo della magnitudine
-    magnitudes = np.abs(fft_result)
+    # Shift the FFT result to center the low frequencies
+    fft_result_shifted = np.fft.fftshift(fft_result)
+    
+    # Compute magnitude spectrum with log scaling
+    magnitudes = np.log1p(np.abs(fft_result_shifted))
 
-    # Creazione del grafico 2D
+    # Get image dimensions
+    Ny, Nx = fft_result.shape  # Rows = Y, Columns = X
+
+    # Compute frequency axes in Hz
+    freq_x = np.fft.fftshift(np.fft.fftfreq(Nx, d=1.0/sampling_rate))  # X-axis frequency
+    freq_y = np.fft.fftshift(np.fft.fftfreq(Ny, d=1.0/sampling_rate))  # Y-axis frequency
+
+    # Plot the FFT magnitude
     plt.figure(figsize=(8, 8))
-    im = plt.imshow(magnitudes, extent=[0, magnitudes.shape[1], 0, magnitudes.shape[0]], origin="lower", cmap="viridis", aspect="auto")
-    plt.colorbar(im, label="Magnitude")
+    plt.imshow(magnitudes, extent=[freq_x[0], freq_x[-1], freq_y[0], freq_y[-1]], origin="lower", cmap="viridis", aspect="auto")
+    plt.colorbar(label="Magnitude")
+    
+    # Labels and grid
     plt.title(title)
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
+    plt.xlabel("Frequency X (Hz)")
+    plt.ylabel("Frequency Y (Hz)")
     plt.grid(visible=True, which='both', color='gray', linestyle='--', linewidth=0.5)
     plt.tight_layout()
 
-    # Salva il grafico su file
+    # Save the plot
     plt.savefig(output_file)
-    print(f"Grafico salvato come {output_file}")
+    print(f"Graph saved as {output_file}")
 
 def load_fft_data_2d(filename):
     """
@@ -68,8 +78,15 @@ filename = "../CUDA_FFT/2D/fft_output_2d.csv"
 # Carica i dati
 fft_result_2d = load_fft_data_2d(filename)
 
+print("FFT Data Shape:", fft_result_2d.shape)
+print("Max Magnitude:", np.max(np.abs(fft_result_2d)))
+print("Min Magnitude:", np.min(np.abs(fft_result_2d)))
+print("Sample Data (first 5x5 values):")
+print(np.abs(fft_result_2d[:5, :5]))
+
+
 # Percorso per salvare il grafico
 output_file_path = "../Plot_result/fft_plot_2d.png"
 
-# Plotta i dati
-plot_fft_result_2d(fft_result_2d, title="FFT Visualization (2D)", xlabel="Frequency X", ylabel="Frequency Y", output_file=output_file_path)
+sampling_rate = 1000  # Hz (Adjust this based on your actual image sampling rate)
+plot_fft_result_2d(fft_result_2d, sampling_rate, title="FFT Visualization (2D)", output_file=output_file_path)

@@ -193,7 +193,7 @@ std::vector<std::vector<std::complex<double>>> iterative_FFT_2D(const std::vecto
     return result;
 }
 
-void cuda_library_fft_2d(const std::vector<std::vector<std::complex<double>>> &input)
+std::vector<std::vector<std::complex<double>>> cuda_library_fft_2d(const std::vector<std::vector<std::complex<double>>> &input)
 {
     int rows = input.size();
     int cols = input[0].size();
@@ -243,6 +243,8 @@ void cuda_library_fft_2d(const std::vector<std::vector<std::complex<double>>> &i
     // Cleanup
     cufftDestroy(plan);
     cudaFree(d_input);
+
+    return output;
 }
 
 // Funzione per graficare usando gnuplot
@@ -281,4 +283,31 @@ void save_fft_result_2d(const std::vector<std::vector<std::complex<double>>> &ff
 
     file.close();
     std::cout << "Dati FFT 2D salvati su: " << filename << std::endl;
+}
+
+std::vector<std::vector<std::complex<double>>> load_matrix_from_txt(const std::string &filename)
+{
+    std::ifstream file(filename);
+    if (!file.is_open())
+    {
+        throw std::runtime_error("Could not open file");
+    }
+
+    int height, width;
+    file >> height >> width; // Read matrix dimensions
+
+    std::vector<std::vector<std::complex<double>>> matrix(height, std::vector<std::complex<double>>(width));
+
+    for (int i = 0; i < height; ++i)
+    {
+        for (int j = 0; j < width; ++j)
+        {
+            int value;
+            file >> value;
+            matrix[i][j] = std::complex<double>(static_cast<double>(value), 0.0); // Convert to complex number
+        }
+    }
+
+    file.close();
+    return matrix;
 }

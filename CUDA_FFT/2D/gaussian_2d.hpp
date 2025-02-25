@@ -10,8 +10,8 @@ public:
     std::vector<std::vector<std::complex<double>>> createInput() override
     {
         std::vector<std::vector<std::complex<double>>> input(rows, std::vector<std::complex<double>>(cols));
-        double sigma_x = 100.0; // Example sigma along X axis
-        double sigma_y = 100.0; // Example sigma along Y axis
+        double sigma_x = 0.5; // Example sigma along X axis
+        double sigma_y = 0.5; // Example sigma along Y axis
         double center_x = rows / 2.0;
         double center_y = cols / 2.0;
 
