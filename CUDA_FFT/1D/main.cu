@@ -18,10 +18,11 @@ int main()
     std::vector<std::complex<double>> input = sinusoidalGen.createInput();
 
     // INITIAL COMPUTATION TO WARM UP THE GPU AND AVOID TIMING DISCREPANCIES
-    std::vector<std::complex<double>> cuda_output_vector = kernel_direct_fft(input);
+    std::vector<std::complex<double>> cuda_output_vector = kernel_direct_fft(input).first;
 
     // DIRECT TRANSFORM
-    cuda_output_vector = kernel_direct_fft(input);
+    cuda_output_vector = kernel_direct_fft(input).first;
+    std::chrono::duration<double> elapsed_seconds = kernel_direct_fft(input).second;
     plot_fft_result(cuda_output_vector);
 
     // INVERSE TRANSFORM

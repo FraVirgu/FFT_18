@@ -248,7 +248,7 @@ void compute_batch_fft(bool direct, int grid_size, int batch, int fft_length, in
 // The input is a 2D vector of std::complex<double> with dimensions [rows x cols].
 // The row-wise FFT is performed on each row (each row is of length = cols),
 // then the result is transposed and a column-wise FFT is applied (each FFT is length = rows).
-std::vector<std::vector<std::complex<double>>> direct_fft_2d(const std::vector<std::vector<std::complex<double>>> &input)
+std::pair<std::vector<std::vector<std::complex<double>>>, std::chrono::duration<double>> direct_fft_2d(const std::vector<std::vector<std::complex<double>>> &input)
 {
     int rows = input.size();
     int cols = input[0].size();
@@ -341,7 +341,7 @@ std::vector<std::vector<std::complex<double>>> direct_fft_2d(const std::vector<s
     cudaFree(d_atomic_array);
     cudaFree(d_first_computation_j);
 
-    return output;
+    return {output, duration_parallel};
 }
 
 // **********************************************************************

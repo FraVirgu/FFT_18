@@ -240,9 +240,9 @@ void gpu_inverse_fft(int grid_size, int log_n, cuDoubleComplex *a, cuDoubleCompl
  * the FFT using CUDA kernels. The execution time is measured and printed to the console.
  *
  * @param input A vector of complex numbers representing the input data to be transformed.
- * @return A vector of complex numbers representing the transformed data.
+ * @return A pair containing a vector of complex numbers representing the transformed data and the duration of the FFT execution.
  */
-std::vector<std::complex<double>> kernel_direct_fft(const std::vector<std::complex<double>> input)
+std::pair<std::vector<std::complex<double>>, std::chrono::duration<double>> kernel_direct_fft(const std::vector<std::complex<double>> input)
 {
     // CUDA malloc initialization
     int *prova;
@@ -284,7 +284,7 @@ std::vector<std::complex<double>> kernel_direct_fft(const std::vector<std::compl
     std::cout << "Parallel FFT execution time: " << duration_parallel.count() << " seconds" << std::endl;
     std::cout << "Parallel FFT execution time WITHOUT MALLOC: " << duration_parallel_without_malloc.count() << " seconds" << std::endl;
 
-    return cuDoubleComplexToVector(y, input.size());
+    return {cuDoubleComplexToVector(y, input.size()), duration_parallel};
 }
 
 /**

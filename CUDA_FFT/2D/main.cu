@@ -33,7 +33,10 @@ int main()
 
   // DIRECT TRANSFORM
   bool direct = true;
-  std::vector<std::vector<std::complex<double>>> cuda_output_vector = direct_fft_2d(input);
+  std::pair<std::vector<std::vector<std::complex<double>>>, std::chrono::duration<double>> result = direct_fft_2d(input);
+
+  std::vector<std::vector<std::complex<double>>> cuda_output_vector = result.first;
+  std::chrono::duration<double> elapsed_seconds = result.second;
 
   // CUDA FFT
   cuda_output_vector = cuda_library_fft_2d(input);

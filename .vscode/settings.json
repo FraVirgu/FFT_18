@@ -68,6 +68,9 @@
         "variant": "cpp",
         "format": "cpp",
         "text_encoding": "cpp",
-        "__nullptr": "cpp"
+        "__nullptr": "cpp",
+        "list": "cpp",
+        "set": "cpp",
+        "typeindex": "cpp"
     }
 }
