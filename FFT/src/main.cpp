@@ -6,10 +6,20 @@
 #include <sys/time.h>
 #include "../include/Cooley-Tukey-parallel.hpp"
 #include "../include/Cooley-Tukey.hpp"
+#include "../include/MPIHelper.h"
+#include "../include/VectorInitializer.h"
 
-#define N std::pow(2, 15) // Must be a power of 2
 using namespace std;
-int main(){
+
+// config of constants for VectorInitializer
+constexpr int DATA_SIZE = 1 << 17;  // 2^17
+constexpr unsigned int RANDOM_SEED = 95;
+
+
+int main(int argc, char** argv){
+    MPIHelper::instance(argc, argv);
+
+    // Timing variables
     struct timeval t1, t2;
     double etimePar,etimeSeq;
 
@@ -17,33 +27,41 @@ int main(){
     ParallelIterativeFFT ParallelFFTSolver = ParallelIterativeFFT();
     SequentialFFT SequentialFFTSolver = SequentialFFT();
 
-    //creating a random input vector
+    /* //creating a random input vector
     srand(95);
     std::vector<std::complex<double>>input_vector;
     for(int i=0; i<N; i++)
     {
        input_vector.push_back(std::complex<double>(rand() % RAND_MAX, rand() % RAND_MAX));
-    }
+    }*/
 
+    // Generate input data using the separate initializer
+    std::vector<std::complex<double>> input_vector =
+            VectorInitializer::createRandomVector(DATA_SIZE, RANDOM_SEED);
+
+    // recursive FFT
     std::vector<std::complex<double>> recursiveResult = SequentialFFTSolver.recursive_FFT(input_vector);
 
     //exec and measure of SEQUENTIAL iterativeFFT
     gettimeofday(&t1, NULL);
     std::vector<std::complex<double>> iterativeResult = SequentialFFTSolver.iterative_FFT(input_vector);
     gettimeofday(&t2, NULL);
-	etimeSeq = std::abs(t2.tv_usec - t1.tv_usec);
-	std::cout <<"Sequential version done, took ->  " << etimeSeq << " usec." << std::endl;
+	// etimeSeq = std::abs(t2.tv_usec - t1.tv_usec);
+    etimeSeq = (t2.tv_sec - t1.tv_sec) * 1000000.0 + (t2.tv_usec - t1.tv_usec);  // considers seconds too now (x1000000 for seconds)
+    std::cout <<"Sequential version done, took ->  " << etimeSeq << " usec." << std::endl;
 
-    //exec and measure of PARALLEL iterativeFFT    
+    // exec and measure of PARALLEL iterativeFFT
     gettimeofday(&t1, NULL);
     std::vector<std::complex<double>> parallelResult = ParallelFFTSolver.findFFT(input_vector);
 	gettimeofday(&t2, NULL);
-    etimePar = std::abs(t2.tv_usec - t1.tv_usec);
-	std::cout <<"Parallel version done, took ->  " << etimePar << " usec." << std::endl;
+    // etimePar = std::abs(t2.tv_usec - t1.tv_usec);
+    etimePar = (t2.tv_sec - t1.tv_sec) * 1000000.0 + (t2.tv_usec - t1.tv_usec);  // considers seconds too now (x1000000 for seconds)
 
+    std::cout <<"Parallel version done, took ->  " << etimePar << " usec." << std::endl;
+    // speedup
     std::cout<<"The parallel version is "<< etimeSeq/etimePar <<" times faster. "<<std::endl; 
 
-    //exec and measure SEQUENTIAL INVERSE iterativeFFT
+    // exec and measure SEQUENTIAL INVERSE iterativeFFT
     gettimeofday(&t1, NULL);
     std::vector<std::complex<double>> iterativeInverseResult = SequentialFFTSolver.iterative_inverse_FFT(input_vector);
 	gettimeofday(&t2, NULL);
