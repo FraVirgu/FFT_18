@@ -6,6 +6,7 @@
 #include <vector>
 #include <complex>
 #include <cmath>
+#include <iostream>
 #include "../include/Cooley-Tukey-parallel.hpp"
 
 std::vector<std::complex<double>> ParallelIterativeFFT::findFFT(std::vector<std::complex<double>> input) {
