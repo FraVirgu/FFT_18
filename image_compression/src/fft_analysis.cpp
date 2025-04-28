@@ -4,6 +4,8 @@
 #include <iostream>
 #include <cmath>
 #include <fstream>
+#include <iomanip>
+
 
 FFTAnalysis::FFTAnalysis(int size) : n(size), reconstructionError(0.0) {}
 
@@ -56,7 +58,7 @@ void FFTAnalysis::computeReconstructionError() {
 }
 
 void FFTAnalysis::showOriginalImage() const {
-    cv::imwrite("original_image.png", originalImage);
+    cv::imwrite("../output/image_output/original_image.png", originalImage);
 }
 
 void FFTAnalysis::showMagnitudeSpectrum(bool afterFilter) const {
@@ -71,7 +73,7 @@ void FFTAnalysis::showMagnitudeSpectrum(bool afterFilter) const {
     cv::Mat magNorm;
     mag.convertTo(magNorm, CV_8U, 255.0 / (maxVal - minVal), -minVal * 255.0 / (maxVal - minVal));
 
-    std::string filename = afterFilter ? "filtered_fft_magnitude.png" : "fft_magnitude.png";
+    std::string filename = afterFilter ? "../output/image_output/filtered_fft_magnitude.png" : "../output/image_output/fft_magnitude.png";
     cv::imwrite(filename, magNorm);
 
     if (afterFilter) {
@@ -83,7 +85,7 @@ void FFTAnalysis::showMagnitudeSpectrum(bool afterFilter) const {
         cv::minMaxLoc(diff, &minVal, &maxVal);
         cv::Mat diffNorm;
         diff.convertTo(diffNorm, CV_8U, 255.0 / (maxVal - minVal), -minVal * 255.0 / (maxVal - minVal));
-        cv::imwrite("fft_removed_frequencies.png", diffNorm);
+        cv::imwrite("../output/image_output/fft_removed_frequencies.png", diffNorm);
     }
 }
 
@@ -91,7 +93,7 @@ void FFTAnalysis::showReconstructedImage() const {
     cv::Mat normImg;
     cv::normalize(reconstructedImage, normImg, 0, 255, cv::NORM_MINMAX);
     normImg.convertTo(normImg, CV_8U);
-    cv::imwrite("reconstructed_image.png", normImg);
+    cv::imwrite("../output/image_output/reconstructed_image.png", normImg);
 }
 
 double FFTAnalysis::getError() const {
@@ -102,15 +104,27 @@ const std::vector<std::vector<std::complex<double>>>& FFTAnalysis::getFFTData() 
     return fft2D;
 }
 
+
 void FFTAnalysis::saveFFTToCSV(const std::string& filename) const {
     std::ofstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Impossible to open file: " << filename << std::endl;
         return;
     }
+
+    file << std::setprecision(12);
+
     for (const auto& row : fft2D) {
         for (size_t j = 0; j < row.size(); j++) {
-            file << "(" << std::real(row[j]) << "," << std::imag(row[j]) << ")";
+            double real_part = std::real(row[j]);
+            double imag_part = std::imag(row[j]);
+
+            file << real_part;
+            if (imag_part >= 0)
+                file << "+" << imag_part << "j";
+            else
+                file << imag_part << "j";
+
             if (j != row.size() - 1)
                 file << ",";
         }
@@ -130,17 +144,20 @@ void FFTAnalysis::saveMagnitudeToCSV(const std::string& filename, bool afterFilt
         return;
     }
 
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
+    file << std::setprecision(12) << std::fixed;
+
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
             double magnitude = std::abs(data[i][j]);
             file << magnitude;
-            if (j != n - 1) file << ",";
+            if (j != n - 1)
+                file << ",";
         }
         file << "\n";
     }
 
     file.close();
-    std::cout << "FFT Module saved in " << filename << std::endl;
+    std::cout << "FFT Magnitude saved in " << filename << std::endl;
 }
 
 

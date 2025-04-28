@@ -69,24 +69,82 @@ def load_fft_data_2d(filename):
 
 
 
-# Debug: Verifica la directory corrente
-print("Current working directory:", os.getcwd())
+# # Debug: Verifica la directory corrente
+# print("Current working directory:", os.getcwd())
+#
+# # Percorso al file esportato dal C++
+# filename = "../CUDA_FFT/2D/fft_output_2d.csv"
+# 
+# # Carica i dati
+# fft_result_2d = load_fft_data_2d(filename)
+#
+# print("FFT Data Shape:", fft_result_2d.shape)
+# print("Max Magnitude:", np.max(np.abs(fft_result_2d)))
+# print("Min Magnitude:", np.min(np.abs(fft_result_2d)))
+# print("Sample Data (first 5x5 values):")
+# print(np.abs(fft_result_2d[:5, :5]))
+#
+#
+# # Percorso per salvare il grafico
+# output_file_path = "../Plot_result/fft_plot_2d.png"
+#
+# sampling_rate = 1000  # Hz (Adjust this based on your actual image sampling rate)
+# plot_fft_result_2d(fft_result_2d, sampling_rate, title="FFT Visualization (2D)", output_file=output_file_path)
 
-# Percorso al file esportato dal C++
-filename = "../CUDA_FFT/2D/fft_output_2d.csv"
 
-# Carica i dati
-fft_result_2d = load_fft_data_2d(filename)
+def load_magnitude_data_2d(filename):
+    """
+    Carica i dati della magnitudo FFT 2D da CSV (solo valori reali).
 
-print("FFT Data Shape:", fft_result_2d.shape)
-print("Max Magnitude:", np.max(np.abs(fft_result_2d)))
-print("Min Magnitude:", np.min(np.abs(fft_result_2d)))
-print("Sample Data (first 5x5 values):")
-print(np.abs(fft_result_2d[:5, :5]))
+    Args:
+        filename (str): Nome del file CSV.
 
+    Returns:
+        np.array: Magnitudine FFT 2D.
+    """
+    return np.loadtxt(filename, delimiter=',')
 
-# Percorso per salvare il grafico
-output_file_path = "../Plot_result/fft_plot_2d.png"
+def plot_magnitude_2d(magnitude, title="Magnitude Spectrum (2D)", output_file="magnitude_2d.png"):
+    """
+    Plotta uno spettro di magnitudo 2D salvato come solo numeri reali.
 
-sampling_rate = 1000  # Hz (Adjust this based on your actual image sampling rate)
-plot_fft_result_2d(fft_result_2d, sampling_rate, title="FFT Visualization (2D)", output_file=output_file_path)
+    Args:
+        magnitude (np.array): Magnitudine FFT 2D.
+        title (str): Titolo del grafico.
+        output_file (str): Path per salvare il grafico.
+    """
+    plt.figure(figsize=(8, 8))
+    plt.imshow(magnitude, cmap='viridis', origin='lower', aspect='auto')
+    plt.colorbar(label="Magnitude")
+    plt.title(title)
+    plt.xlabel("X Frequency Bin")
+    plt.ylabel("Y Frequency Bin")
+    plt.grid(visible=False)
+    plt.tight_layout()
+    plt.savefig(output_file)
+    print(f"Graph saved as {output_file}")
+    plt.show()
+
+def plot_magnitude_2d_log(magnitude, title="Log-Scaled Magnitude Spectrum (2D)", output_file="magnitude_2d_log.png"):
+    """
+    Plotta uno spettro di magnitudo 2D applicando scala logaritmica,
+    utile per visualizzare valori molto piccoli dopo filtraggio.
+
+    Args:
+        magnitude (np.array): Magnitudine FFT 2D (reale).
+        title (str): Titolo del grafico.
+        output_file (str): Path per salvare il grafico.
+    """
+    magnitude_log = np.log1p(magnitude)
+
+    plt.figure(figsize=(8, 8))
+    plt.imshow(magnitude_log, cmap='viridis', origin='lower', aspect='auto')
+    plt.colorbar(label="Log(1 + Magnitude)")
+    plt.title(title)
+    plt.xlabel("X Frequency Bin")
+    plt.ylabel("Y Frequency Bin")
+    plt.grid(visible=False)
+    plt.tight_layout()
+    plt.savefig(output_file)
+    print(f"Log-scaled magnitude graph saved as {output_file}")
+    plt.show()
