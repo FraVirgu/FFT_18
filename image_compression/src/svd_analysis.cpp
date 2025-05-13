@@ -47,5 +47,5 @@ void SVDAnalyzer::showOriginalImage() const {
     cv::Mat normImg;
     cv::normalize(originalGray, normImg, 0, 255, cv::NORM_MINMAX);
     normImg.convertTo(normImg, CV_8U);
-    cv::imwrite("original_image.png", normImg);
+    cv::imwrite("../output/image_output/original_image.png", normImg);
 }

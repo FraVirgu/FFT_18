@@ -15,19 +15,19 @@ int main(int argc, char* argv[]) {
     // SVD ANALYSIS
     SVDAnalyzer svd(imagePath, size);
     svd.computeSVD();
-    svd.saveSingularValues("singular_values.csv");
+    svd.saveSingularValues("../output/csv_output/singular_values.csv");
     svd.showOriginalImage();
 
     // FFT ANALYSIS
     FFTAnalysis fft(size);
     fft.loadImage(imagePath);
     fft.computeFFT();
-    fft.saveFFTToCSV("fft_output_2d.csv");
-    fft.saveMagnitudeToCSV("fft_magnitude.csv");
+    fft.saveFFTToCSV("../output/csv_output/fft_output_2d.csv");
+    fft.saveMagnitudeToCSV("../output/csv_output/fft_magnitude.csv");
     fft.showMagnitudeSpectrum(false);
 
     fft.applyThreshold(threshold);
-    fft.saveMagnitudeToCSV("fft_magnitude_filtered.csv", true);
+    fft.saveMagnitudeToCSV("../output/csv_output/fft_magnitude_filtered.csv", true);
     fft.showMagnitudeSpectrum(true);
 
     fft.computeIFFT();
@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
     cv::resize(input, input, cv::Size(size, size));
     ErrorPlot errorPlot(input);
     errorPlot.computeErrorsForThresholds({10, 50, 100, 200, 500, 1000});
-    errorPlot.saveToCSV("error_vs_threshold.csv");
+    errorPlot.saveToCSV("../output/csv_output/error_vs_threshold.csv");
 
     std::cout << "Everything Completed and data saved\n";
 
